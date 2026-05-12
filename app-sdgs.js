@@ -29,7 +29,7 @@ let editSdgId = null;
 // ── LOGIN CHECK ──
 const currentUser = JSON.parse(sessionStorage.getItem('sdg_user') || 'null');
 if (!currentUser) {
-  window.location.href = 'login.html';
+  window.location.href = 'index.html';
 }
 
 // ── TOAST NOTIFICATION ──
