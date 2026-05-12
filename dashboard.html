@@ -119,7 +119,7 @@ const sdgColors = {1:'#e5243b',2:'#dda63a',3:'#4c9f38',4:'#c5192d',5:'#ff3a21',6
 // Check login
 const user = JSON.parse(sessionStorage.getItem('sdg_user') || 'null');
 if (!user) {
-  window.location.href = 'login.html';
+  window.location.href = 'index.html';
 } else {
   document.getElementById('userFaculty').textContent = user.faculty_name;
   document.getElementById('userRole').textContent = user.role === 'admin' ? '👑 ผู้ดูแลระบบ (เห็นทุกคณะ)' : '👤 ' + user.username;
@@ -220,7 +220,7 @@ async function deleteProject(sdgId, title) {
 
 function logout() {
   sessionStorage.removeItem('sdg_user');
-  window.location.href = 'login.html';
+  window.location.href = 'index.html';
 }
 </script>
 </body>
