@@ -19,7 +19,7 @@ const sdgNames = {
 // ══════════════════════════════════════════════════════════
 // ⚠️ ใส่ URL จาก Google Apps Script Web App ตรงนี้
 // ══════════════════════════════════════════════════════════
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwWdtigg-6rvluKnH1iq7fv7X9F1_OikDagNHSAcLTpkSmP_4izYnewps3unxHWbDBr/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3GW1VJu64Km4n9rypJGkpVUV67hJTUNVjgd6P4mC_xLfkzTocqQq1fVTcHf-sWgGz/exec';
 
 let selectedSdgs = [];
 let activityCounter = 0;
