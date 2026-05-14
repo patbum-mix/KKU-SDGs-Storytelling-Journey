@@ -56,6 +56,24 @@
 
     .loading{text-align:center;padding:40px;color:var(--kku-gray);font-size:14px;}
 
+    /* Admin Log */
+    .admin-log-btn{padding:10px 20px;background:linear-gradient(135deg,#8e44ad,#6c3483);color:white;border:none;border-radius:10px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.2s;box-shadow:0 4px 14px rgba(142,68,173,0.3);}
+    .admin-log-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(142,68,173,0.4);}
+    .log-panel{display:none;background:white;border-radius:14px;padding:20px;border:1px solid var(--kku-border);box-shadow:var(--shadow-md);margin-bottom:20px;}
+    .log-panel.show{display:block;}
+    .log-panel h3{font-family:'Prompt',sans-serif;font-size:15px;font-weight:700;color:#8e44ad;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+    .log-table{width:100%;border-collapse:collapse;font-size:12px;}
+    .log-table th{background:#f5f0fa;color:#8e44ad;padding:8px 10px;text-align:left;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #e0d4f0;}
+    .log-table td{padding:8px 10px;border-bottom:1px solid var(--kku-border);color:#333;}
+    .log-table tr:hover td{background:#faf8fd;}
+    .log-action{padding:3px 8px;border-radius:12px;font-size:10px;font-weight:700;color:white;display:inline-block;}
+    .log-action-view{background:#3498db;}
+    .log-action-edit{background:#0d7a6e;}
+    .log-action-save{background:#27ae60;}
+    .log-action-delete{background:#e74c3c;}
+    .log-action-new{background:#f39c12;}
+    .log-close{padding:6px 14px;background:var(--kku-light);border:1px solid var(--kku-border);border-radius:8px;font-size:12px;cursor:pointer;font-family:'Sarabun',sans-serif;margin-top:12px;}
+
     @media(max-width:640px){
       .dash-stats{grid-template-columns:1fr;}
       .dash-toolbar{flex-direction:column;gap:12px;align-items:stretch;}
@@ -101,7 +119,17 @@
 
   <div class="dash-toolbar">
     <h2>📋 รายการโครงการ</h2>
-    <button class="dash-add-btn" onclick="addProject()">➕ เพิ่มโครงการใหม่</button>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="admin-log-btn" id="logBtn" style="display:none;" onclick="toggleLogPanel()">📋 ประวัติ Admin</button>
+      <button class="dash-add-btn" onclick="addProject()">➕ เพิ่มโครงการใหม่</button>
+    </div>
+  </div>
+
+  <!-- Admin Log Panel -->
+  <div class="log-panel" id="logPanel">
+    <h3>📋 ประวัติการดำเนินการของ Admin</h3>
+    <div id="logContent"><div class="loading">⏳ กำลังโหลด...</div></div>
+    <button class="log-close" onclick="toggleLogPanel()">✕ ปิด</button>
   </div>
 
   <div class="project-list" id="projectList">
@@ -110,7 +138,7 @@
 </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbwWdtigg-6rvluKnH1iq7fv7X9F1_OikDagNHSAcLTpkSmP_4izYnewps3unxHWbDBr/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbz3GW1VJu64Km4n9rypJGkpVUV67hJTUNVjgd6P4mC_xLfkzTocqQq1fVTcHf-sWgGz/exec';
 
 const sdgColors = {1:'#e5243b',2:'#dda63a',3:'#4c9f38',4:'#c5192d',5:'#ff3a21',6:'#26bde2',
   7:'#fcc30b',8:'#a21942',9:'#fd6925',10:'#dd1367',11:'#fd9d24',12:'#bf8b2e',
@@ -123,6 +151,10 @@ if (!user) {
 } else {
   document.getElementById('userFaculty').textContent = user.faculty_name;
   document.getElementById('userRole').textContent = user.role === 'admin' ? '👑 ผู้ดูแลระบบ (เห็นทุกคณะ)' : '👤 ' + user.username;
+  // Show admin log button
+  if (user.role === 'admin') {
+    document.getElementById('logBtn').style.display = 'flex';
+  }
   loadProjects();
 }
 
@@ -188,10 +220,18 @@ function addProject() {
 }
 
 function editProject(sdgId) {
+  // Log if admin
+  if (user.role === 'admin') {
+    sendAdminLog(sdgId, '', 'เข้าแก้ไขโครงการ', 'เปิดหน้าแก้ไข ' + sdgId);
+  }
   window.location.href = 'index-sdgs.html?edit=' + sdgId;
 }
 
 function viewProject(sdgId) {
+  // Log if admin
+  if (user.role === 'admin') {
+    sendAdminLog(sdgId, '', 'ดูโครงการ', 'เปิดดู Story Card ' + sdgId);
+  }
   window.location.href = 'index-sdgs.html?view=' + sdgId;
 }
 
@@ -202,7 +242,7 @@ async function deleteProject(sdgId, title) {
     const res = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'delete', sdg_id: sdgId }),
+      body: JSON.stringify({ action: 'delete', sdg_id: sdgId, username: user.username }),
       redirect: 'follow'
     });
     const result = await res.json();
@@ -215,6 +255,47 @@ async function deleteProject(sdgId, title) {
     }
   } catch (error) {
     alert('❌ เกิดข้อผิดพลาด: ' + error.message);
+  }
+}
+
+// ── Admin Log Functions ──
+function sendAdminLog(sdgId, projectTitle, logAction, detail) {
+  fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action: 'logAction', username: user.username, sdg_id: sdgId, project_title: projectTitle, log_action: logAction, detail: detail }),
+    redirect: 'follow'
+  }).catch(function(e) { console.log('Log error:', e); });
+}
+
+async function toggleLogPanel() {
+  const panel = document.getElementById('logPanel');
+  if (panel.classList.contains('show')) {
+    panel.classList.remove('show');
+    return;
+  }
+  panel.classList.add('show');
+  document.getElementById('logContent').innerHTML = '<div class="loading">⏳ กำลังโหลด...</div>';
+
+  try {
+    const url = API_URL + '?action=getLogs';
+    const res = await fetch(url);
+    const result = await res.json();
+
+    if (result.status === 'success' && result.logs.length > 0) {
+      const actionClass = {'ดูโครงการ':'log-action-view','เข้าแก้ไขโครงการ':'log-action-edit','แก้ไขโครงการ':'log-action-edit','บันทึกโครงการใหม่':'log-action-new','ลบโครงการ':'log-action-delete'};
+      let html = '<table class="log-table"><tr><th>เวลา</th><th>Admin</th><th>โครงการ</th><th>การดำเนินการ</th><th>รายละเอียด</th></tr>';
+      result.logs.forEach(l => {
+        const cls = actionClass[l.action] || 'log-action-view';
+        html += '<tr><td>' + l.timestamp + '</td><td><strong>' + l.admin_username + '</strong><br><span style="font-size:10px;color:var(--kku-gray)">' + l.admin_name + '</span></td><td>' + (l.sdg_id||'-') + '</td><td><span class="log-action ' + cls + '">' + l.action + '</span></td><td>' + (l.detail||'-') + '</td></tr>';
+      });
+      html += '</table>';
+      document.getElementById('logContent').innerHTML = html;
+    } else {
+      document.getElementById('logContent').innerHTML = '<div style="text-align:center;padding:20px;color:var(--kku-gray);">ยังไม่มีประวัติ</div>';
+    }
+  } catch (error) {
+    document.getElementById('logContent').innerHTML = '<div style="color:#e74c3c;padding:10px;">โหลดไม่สำเร็จ: ' + error.message + '</div>';
   }
 }
 
