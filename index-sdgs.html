@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SDGs Storytelling Journey – KKU SDG Template</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Prompt:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+<style>
+/* ── Multi image/link rows ── */
+.story-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:10px;}
+.story-row .story-input-wrap{flex:1;}
+.story-row input{width:100%;}
+.story-remove-btn{width:38px;height:42px;border-radius:9px;border:1.5px solid #ffd7d7;background:#fff5f5;color:#e74c3c;cursor:pointer;font-size:14px;flex-shrink:0;transition:all 0.2s;}
+.story-remove-btn:hover{background:#e74c3c;color:#fff;}
+.img-status{font-size:11px;font-weight:600;margin-top:4px;display:none;}
+.img-status.ok{color:#27ae60;display:block;}
+.img-status.err{color:#e74c3c;display:block;}
+.img-thumb{margin-top:6px;max-width:140px;max-height:100px;border-radius:8px;border:1.5px solid #dde4f0;display:none;object-fit:cover;}
+.img-thumb.show{display:block;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="site-header">
+  <div class="header-inner">
+    <div class="header-badge">
+      <span class="dot"></span>
+      KKU SDG — SDGs Impact Story Template
+    </div>
+    <h1 class="header-title">🌍 SDGs Storytelling Journey<br><span>เส้นทางผลกระทบโครงการ SDGs</span></h1>
+    <p class="header-subtitle">Template สำหรับบันทึกเรื่องราวโครงการ SDGs ของคณะ เพื่อแสดงคุณค่าและการต่อยอดสู่เป้าหมายการพัฒนาที่ยั่งยืน (SDGs) ของ มข.</p>
+    <div class="header-sdg-row">
+      <span style="font-size:11px;color:rgba(255,255,255,0.5);margin-right:4px;">SDGs ที่เกี่ยวข้อง:</span>
+      <div class="sdg-mini-badge sdg-1">1</div><div class="sdg-mini-badge sdg-2">2</div>
+      <div class="sdg-mini-badge sdg-3">3</div><div class="sdg-mini-badge sdg-4">4</div>
+      <div class="sdg-mini-badge sdg-5">5</div><div class="sdg-mini-badge sdg-6">6</div>
+      <div class="sdg-mini-badge sdg-7">7</div><div class="sdg-mini-badge sdg-8">8</div>
+      <div class="sdg-mini-badge sdg-9">9</div><div class="sdg-mini-badge sdg-10">10</div>
+      <div class="sdg-mini-badge sdg-11">11</div><div class="sdg-mini-badge sdg-12">12</div>
+      <div class="sdg-mini-badge sdg-13">13</div><div class="sdg-mini-badge sdg-14">14</div>
+      <div class="sdg-mini-badge sdg-15">15</div><div class="sdg-mini-badge sdg-16">16</div>
+      <div class="sdg-mini-badge sdg-17">17</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- PROGRESS -->
+  <div class="progress-steps">
+    <div class="step-item active" id="step1">
+      <div class="step-circle">1</div>
+      <div class="step-label">ข้อมูลโครงการ</div>
+    </div>
+    <div class="step-item" id="step2">
+      <div class="step-circle">2</div>
+      <div class="step-label">กิจกรรม</div>
+    </div>
+    <div class="step-item" id="step3">
+      <div class="step-circle">3</div>
+      <div class="step-label">ผลลัพธ์</div>
+    </div>
+    <div class="step-item" id="step4">
+      <div class="step-circle">4</div>
+      <div class="step-label">SDGs</div>
+    </div>
+    <div class="step-item" id="step5">
+      <div class="step-circle">5</div>
+      <div class="step-label">ตัวอย่างสำเร็จ</div>
+    </div>
+  </div>
+
+  <!-- LIVE STORY PREVIEW -->
+  <div class="preview-panel">
+    <div class="preview-title">📖 Story Preview — เรื่องราวของคุณ</div>
+    <div class="story-flow" id="storyFlow">
+      <div class="story-node">
+        <div class="node-label">ใคร (Who)</div>
+        <div class="node-val" id="preWho">คณะ / หน่วยงาน</div>
+      </div>
+      <div class="story-arrow">→</div>
+      <div class="story-node">
+        <div class="node-label">ทำอะไรร่วมกับ</div>
+        <div class="node-val" id="preWith">พันธมิตร</div>
+      </div>
+      <div class="story-arrow">→</div>
+      <div class="story-node">
+        <div class="node-label">กิจกรรมหลัก</div>
+        <div class="node-val" id="preAct">กิจกรรม...</div>
+      </div>
+      <div class="story-arrow">→</div>
+      <div class="story-node">
+        <div class="node-label">ผลลัพธ์สำคัญ</div>
+        <div class="node-val" id="preResult">ผลที่เกิดขึ้น...</div>
+      </div>
+    </div>
+    <div class="sdg-display-tags" id="previewSdgTags">
+      <span style="font-size:11px;color:rgba(255,255,255,0.4);">เลือก SDGs ด้านล่างเพื่อแสดงที่นี่</span>
+    </div>
+  </div>
+
+  <!-- SECTION 1: PROJECT INFO -->
+  <div class="section-card">
+    <div class="section-header" onclick="toggleSection('sec1')">
+      <div class="section-icon" style="background:linear-gradient(135deg,#1a2b5e20,#1a2b5e10);">📋</div>
+      <div>
+        <div class="section-num">ส่วนที่ 1</div>
+        <div class="section-title">ข้อมูลพื้นฐานโครงการ</div>
+      </div>
+      <button class="section-toggle open" id="toggle-sec1">▼</button>
+    </div>
+    <div class="section-body open" id="sec1">
+      <div class="tip-box">
+        <span class="tip-icon">💡</span>
+        <span><strong>คำแนะนำ:</strong> กรอกข้อมูลพื้นฐานของโครงการ เช่น ชื่อโครงการ คณะ/หน่วยงานเจ้าของ และองค์กรภาคีที่ร่วมดำเนินงาน</span>
+      </div>
+      <div class="field-group">
+        <label>ชื่อโครงการ <span class="req">*</span></label>
+        <input type="text" id="mou_title" placeholder="เช่น โครงการพัฒนาชุมชนสีเขียวด้านพลังงานสะอาด" oninput="updatePreview()">
+        <div class="error-msg">กรุณากรอกชื่อโครงการ</div>
+      </div>
+      <div class="field-group">
+        <label>คณะ / หน่วยงาน มข. <span class="req">*</span><span class="hint">(ผู้ดำเนินการหลัก สามารถกรอกได้มากกว่า 1 คณะ / หน่วยงาน)</span></label>
+        <textarea id="kku_unit" rows="2" placeholder="เช่น คณะวิศวกรรมศาสตร์, คณะวิทยาศาสตร์ (คั่นด้วยเครื่องหมาย , หรือขึ้นบรรทัดใหม่)" oninput="updatePreview()"></textarea>
+        <div class="error-msg">กรุณากรอกคณะ/หน่วยงาน</div>
+      </div>
+      <div class="field-group">
+        <label>ผู้รับผิดชอบโครงการ <span class="req">*</span><span class="hint">(สามารถกรอกได้มากกว่า 1 คน)</span></label>
+        <textarea id="lead_person" rows="2" placeholder="เช่น รศ.ดร.ชื่อ นามสกุล, ผศ.ดร.ชื่อ นามสกุล (คั่นด้วยเครื่องหมาย , หรือขึ้นบรรทัดใหม่)"></textarea>
+        <div class="error-msg">กรุณากรอกผู้รับผิดชอบ</div>
+      </div>
+
+      <!-- องค์กรภาคี แยกตามประเภท -->
+      <div style="margin-bottom:18px;">
+        <label style="margin-bottom:10px;font-size:13px;">องค์กรภาคี / พันธมิตร <span class="hint">(กรอกเฉพาะประเภทที่เกี่ยวข้อง ไม่จำเป็นต้องกรอกทุกช่อง)</span></label>
+      </div>
+      <div class="field-row" style="margin-bottom:14px;">
+        <div class="field-group">
+          <label>🏛️ ภาครัฐ (หน่วยงานราชการ)</label>
+          <input type="text" id="partner_gov" placeholder="เช่น สำนักงานสาธารณสุขจังหวัด, กรมป่าไม้" oninput="updatePreview()">
+        </div>
+        <div class="field-group">
+          <label>🏢 ภาคเอกชน (บริษัท/วิสาหกิจ)</label>
+          <input type="text" id="partner_private" placeholder="เช่น บริษัท HYAPSS จำกัด" oninput="updatePreview()">
+        </div>
+      </div>
+      <div class="field-row" style="margin-bottom:14px;">
+        <div class="field-group">
+          <label>🎓 มหาวิทยาลัย / สถาบันการศึกษา</label>
+          <input type="text" id="partner_edu" placeholder="เช่น มหาวิทยาลัยแม่ฟ้าหลวง" oninput="updatePreview()">
+        </div>
+        <div class="field-group">
+          <label>🌏 องค์กรระหว่างประเทศ</label>
+          <input type="text" id="partner_intl" placeholder="เช่น UNESCO, UNDP" oninput="updatePreview()">
+        </div>
+      </div>
+      <div class="field-row" style="margin-bottom:14px;">
+        <div class="field-group">
+          <label>💚 องค์กรไม่แสวงหากำไร / NGO</label>
+          <input type="text" id="partner_ngo" placeholder="เช่น มูลนิธิสืบนาคะเสถียร" oninput="updatePreview()">
+        </div>
+        <div class="field-group">
+          <label>🏘️ ชุมชน / วิสาหกิจชุมชน</label>
+          <input type="text" id="partner_community" placeholder="เช่น วิสาหกิจชุมชนบ้านค้อ" oninput="updatePreview()">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>ระดับความร่วมมือ</label>
+        <select id="partner_level">
+          <option value="">-- เลือก --</option>
+          <option>ระดับท้องถิ่น / จังหวัด</option>
+          <option>ระดับภูมิภาค (อีสาน)</option>
+          <option>ระดับชาติ</option>
+          <option>ระดับนานาชาติ</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>วันที่เริ่มโครงการ</label>
+          <input type="date" id="mou_date">
+        </div>
+        <div class="field-group">
+          <label>ระยะเวลาโครงการ</label>
+          <select id="mou_duration">
+            <option value="">-- เลือก --</option>
+            <option>1 ปี</option><option>2 ปี</option><option>3 ปี</option>
+            <option>5 ปี</option><option>ไม่มีกำหนด</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>วัตถุประสงค์หลักของโครงการ <span class="req">*</span></label>
+        <textarea id="mou_objective" placeholder="อธิบายเป้าหมายหลักของโครงการนี้ เช่น เพื่อพัฒนาหลักสูตรร่วม / วิจัยและพัฒนานวัตกรรม / บริการวิชาการสู่ชุมชน" oninput="updatePreview()"></textarea>
+        <div class="error-msg">กรุณากรอกวัตถุประสงค์หลัก</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: ACTIVITIES -->
+  <div class="section-card">
+    <div class="section-header" onclick="toggleSection('sec2')">
+      <div class="section-icon" style="background:linear-gradient(135deg,#0d7a6e20,#0d7a6e10);">🔗</div>
+      <div>
+        <div class="section-num">ส่วนที่ 2</div>
+        <div class="section-title">กิจกรรมความร่วมมือ (Activities)</div>
+      </div>
+      <button class="section-toggle" id="toggle-sec2">▼</button>
+    </div>
+    <div class="section-body" id="sec2">
+      <div class="tip-box">
+        <span class="tip-icon">🔗</span>
+        <span><strong>คำแนะนำ:</strong> ระบุกิจกรรมที่เกิดขึ้นจากโครงการนี้ตามลำดับเวลา โดยแต่ละกิจกรรมควรระบุว่า <em>ทำอะไร กับใคร และในปีใด</em></span>
+      </div>
+      <ul class="activities-list" id="activitiesList"></ul>
+      <button class="add-btn" onclick="addActivity()">+ เพิ่มกิจกรรม</button>
+    </div>
+  </div>
+
+  <!-- SECTION 3: OUTCOMES -->
+  <div class="section-card">
+    <div class="section-header" onclick="toggleSection('sec3')">
+      <div class="section-icon" style="background:linear-gradient(135deg,#27ae6020,#27ae6010);">📊</div>
+      <div>
+        <div class="section-num">ส่วนที่ 3</div>
+        <div class="section-title">ผลลัพธ์และผลกระทบ (Outcomes & Impact)</div>
+      </div>
+      <button class="section-toggle" id="toggle-sec3">▼</button>
+    </div>
+    <div class="section-body" id="sec3">
+      <div class="tip-box">
+        <span class="tip-icon">📊</span>
+        <span><strong>คำแนะนำ:</strong> กรอกตัวเลขและผลลัพธ์ที่วัดได้จากโครงการนี้ เพื่อแสดงผลกระทบที่เป็นรูปธรรม</span>
+      </div>
+      <div class="outcome-grid">
+        <div class="outcome-card">
+          <span class="oc-icon">👥</span>
+          <label>จำนวนผู้รับประโยชน์</label>
+          <input type="text" id="oc_beneficiary" placeholder="0" oninput="updatePreview()">
+          <div class="unit">คน / ราย</div>
+        </div>
+        <div class="outcome-card">
+          <span class="oc-icon">🎓</span>
+          <label>นักศึกษาที่เกี่ยวข้อง</label>
+          <input type="text" id="oc_student" placeholder="0">
+          <div class="unit">คน</div>
+        </div>
+        <div class="outcome-card">
+          <span class="oc-icon">🔬</span>
+          <label>งานวิจัย/นวัตกรรม</label>
+          <input type="text" id="oc_research" placeholder="0">
+          <div class="unit">ชิ้น / โครงการ</div>
+        </div>
+        <div class="outcome-card">
+          <span class="oc-icon">💰</span>
+          <label>มูลค่าทางเศรษฐกิจ</label>
+          <input type="text" id="oc_value" placeholder="0">
+          <div class="unit">บาท / ล้านบาท</div>
+          <div style="margin-top:8px;padding-top:8px;border-top:1px solid #e0eaf8;font-size:11px;line-height:1.6;">
+            <a href="https://sroi.kku.ac.th/login.html" target="_blank" style="color:var(--kku-teal);font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
+              🔗 คลิกเพื่อคำนวณมูลค่าทางเศรษฐกิจ
+            </a>
+            <div style="color:var(--kku-gray);margin-top:4px;">📞 สอบถามเพิ่มเติม: คุณกุลธิดา <a href="tel:0816628531" style="color:var(--kku-teal);font-weight:600;text-decoration:none;">081-662-8531</a></div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <span class="oc-icon">🌿</span>
+          <label>ผลด้านสิ่งแวดล้อม</label>
+          <input type="text" id="oc_env" placeholder="เช่น ลด CO₂ 15,000 ตัน">
+          <div class="unit">ระบุหน่วย</div>
+        </div>
+        <div class="outcome-card">
+          <span class="oc-icon">🤝</span>
+          <label>ความร่วมมือที่ต่อยอด</label>
+          <input type="text" id="oc_extend" placeholder="0">
+          <div class="unit">โครงการใหม่</div>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>ผลลัพธ์สำคัญที่สุด (Key Achievement) <span class="req">*</span></label>
+        <textarea id="key_achievement" placeholder="สรุปผลสำคัญที่สุดของโครงการนี้ในแบบ 1-2 ประโยค" oninput="updatePreview()"></textarea>
+        <div class="error-msg">กรุณากรอกผลลัพธ์สำคัญ</div>
+      </div>
+      <div class="field-group">
+        <label>ผลกระทบที่ต่อยอดออกไป (Spillover Impact)</label>
+        <textarea id="spillover" placeholder="กิจกรรมหรือโครงการใหม่ที่เกิดขึ้นจากโครงการนี้"></textarea>
+      </div>
+      <div class="field-group">
+        <label>💬 คำพูดที่น่าจดจำ (Testimonial / Quote)</label>
+        <div class="quote-block">
+          <textarea placeholder='"อ้างอิงคำพูดจากผู้รับประโยชน์ ผู้บริหาร หรือพันธมิตร ที่สะท้อนคุณค่าของโครงการนี้"' id="quote_text"></textarea>
+          <div class="quote-attr">
+            <span class="quote-dash">—</span>
+            <input type="text" id="quote_attr" placeholder="ชื่อ-ตำแหน่ง-องค์กร" style="flex:1">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: SDGs -->
+  <div class="section-card">
+    <div class="section-header" onclick="toggleSection('sec4')">
+      <div class="section-icon" style="background:linear-gradient(135deg,#3498db20,#3498db10);">🌐</div>
+      <div>
+        <div class="section-num">ส่วนที่ 4</div>
+        <div class="section-title">SDGs ที่เกี่ยวข้อง</div>
+      </div>
+      <button class="section-toggle" id="toggle-sec4">▼</button>
+    </div>
+    <div class="section-body" id="sec4">
+      <div class="tip-box">
+        <span class="tip-icon">🌐</span>
+        <span><strong>คำแนะนำ:</strong> คลิกเลือก SDGs ที่โครงการนี้มีส่วนช่วยขับเคลื่อน (สามารถเลือกได้มากกว่า 1 ข้อ)</span>
+      </div>
+      <div class="sdg-picker-grid">
+        <button class="sdg-pick-btn sdg-1" onclick="toggleSdg(1,this)"><span class="sdg-num">1</span><span class="sdg-lbl">No Poverty</span></button>
+        <button class="sdg-pick-btn sdg-2" onclick="toggleSdg(2,this)"><span class="sdg-num">2</span><span class="sdg-lbl">Zero Hunger</span></button>
+        <button class="sdg-pick-btn sdg-3" onclick="toggleSdg(3,this)"><span class="sdg-num">3</span><span class="sdg-lbl">Good Health</span></button>
+        <button class="sdg-pick-btn sdg-4" onclick="toggleSdg(4,this)"><span class="sdg-num">4</span><span class="sdg-lbl">Quality Edu</span></button>
+        <button class="sdg-pick-btn sdg-5" onclick="toggleSdg(5,this)"><span class="sdg-num">5</span><span class="sdg-lbl">Gender Eq.</span></button>
+        <button class="sdg-pick-btn sdg-6" onclick="toggleSdg(6,this)"><span class="sdg-num">6</span><span class="sdg-lbl">Clean Water</span></button>
+        <button class="sdg-pick-btn sdg-7" onclick="toggleSdg(7,this)"><span class="sdg-num">7</span><span class="sdg-lbl">Clean Energy</span></button>
+        <button class="sdg-pick-btn sdg-8" onclick="toggleSdg(8,this)"><span class="sdg-num">8</span><span class="sdg-lbl">Decent Work</span></button>
+        <button class="sdg-pick-btn sdg-9" onclick="toggleSdg(9,this)"><span class="sdg-num">9</span><span class="sdg-lbl">Innovation</span></button>
+        <button class="sdg-pick-btn sdg-10" onclick="toggleSdg(10,this)"><span class="sdg-num">10</span><span class="sdg-lbl">Reduce Ineq.</span></button>
+        <button class="sdg-pick-btn sdg-11" onclick="toggleSdg(11,this)"><span class="sdg-num">11</span><span class="sdg-lbl">Sustainable Cities</span></button>
+        <button class="sdg-pick-btn sdg-12" onclick="toggleSdg(12,this)"><span class="sdg-num">12</span><span class="sdg-lbl">Resp. Consump.</span></button>
+        <button class="sdg-pick-btn sdg-13" onclick="toggleSdg(13,this)"><span class="sdg-num">13</span><span class="sdg-lbl">Climate Action</span></button>
+        <button class="sdg-pick-btn sdg-14" onclick="toggleSdg(14,this)"><span class="sdg-num">14</span><span class="sdg-lbl">Life Below Water</span></button>
+        <button class="sdg-pick-btn sdg-15" onclick="toggleSdg(15,this)"><span class="sdg-num">15</span><span class="sdg-lbl">Life on Land</span></button>
+        <button class="sdg-pick-btn sdg-16" onclick="toggleSdg(16,this)"><span class="sdg-num">16</span><span class="sdg-lbl">Peace &amp; Justice</span></button>
+        <button class="sdg-pick-btn sdg-17" onclick="toggleSdg(17,this)"><span class="sdg-num">17</span><span class="sdg-lbl">Partnerships</span></button>
+      </div>
+      <div class="field-group" style="margin-top:16px;">
+        <label>อธิบายความเชื่อมโยงกับ SDGs</label>
+        <textarea id="sdg_explanation" placeholder="อธิบายว่าโครงการนี้ส่งเสริม SDGs ที่เลือกอย่างไร" oninput="updatePreview()"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: SUCCESS STORY -->
+  <div class="section-card">
+    <div class="section-header" onclick="toggleSection('sec5')">
+      <div class="section-icon" style="background:linear-gradient(135deg,#f39c1220,#f39c1210);">✨</div>
+      <div>
+        <div class="section-num">ส่วนที่ 5</div>
+        <div class="section-title">ตัวอย่างความสำเร็จ (Success Story)</div>
+      </div>
+      <button class="section-toggle" id="toggle-sec5">▼</button>
+    </div>
+    <div class="section-body" id="sec5">
+      <div class="tip-box">
+        <span class="tip-icon">✨</span>
+        <span><strong>คำแนะนำ:</strong> เล่าเรื่องราวความสำเร็จที่เป็นรูปธรรมที่สุด 1 เรื่อง ว่ามีใครได้รับประโยชน์อย่างไรจากโครงการนี้บ้าง</span>
+      </div>
+      <div class="field-group">
+        <label>หัวข้อ Success Story</label>
+        <input type="text" id="story_title" placeholder="เช่น จากชุมชนสู่ความยั่งยืน: โครงการพลังงานสะอาดเพื่อท้องถิ่น" oninput="updatePreview()">
+      </div>
+      <div class="field-group">
+        <label>ปัญหา/โจทย์เริ่มต้น (Problem)</label>
+        <textarea id="story_problem" placeholder="อธิบายปัญหาหรือโจทย์ที่โครงการนี้ต้องการแก้ไข..." oninput="updatePreview()"></textarea>
+      </div>
+      <div class="field-group">
+        <label>สิ่งที่ทำ (Action)</label>
+        <textarea id="story_action" placeholder="อธิบายสิ่งที่ดำเนินการ..."></textarea>
+      </div>
+      <div class="field-group">
+        <label>ผลที่เกิดขึ้น (Result)</label>
+        <textarea id="story_result" placeholder="อธิบายผลลัพธ์ที่เกิดขึ้น..."></textarea>
+      </div>
+      <!-- ข้อความเตือน (ไม่ล็อค) -->
+      <div class="tip-box" style="background:linear-gradient(135deg,#fff8e8,#fffdf5);border-color:var(--kku-gold);">
+        <span class="tip-icon">📌</span>
+        <span style="color:#7a5c1e;"><strong>อย่าลืม!</strong> ถ้าโครงการนี้มีรูปภาพหรือลิงก์บทความ/ข่าว กรุณาใส่ให้ครบ (ใส่ได้หลายรูปและหลายลิงก์) — ยิ่งมีมากยิ่งดีต่อการนำไปใช้งานต่อ</span>
+      </div>
+
+      <!-- ลิงก์บทความ/ข่าว (หลายช่อง) -->
+      <div class="field-group" id="storyLinksGroup">
+        <label>ลิงก์บทความ / ข่าว <span class="req">*</span><span class="hint">(ต้องมีอย่างน้อย 1 ลิงก์ · เพิ่มได้หลายลิงก์)</span></label>
+        <div id="storyLinksList"></div>
+        <button type="button" class="add-btn" onclick="addStoryLink()" style="margin-top:8px;">+ เพิ่มลิงก์บทความ/ข่าว</button>
+        <div class="error-msg">กรุณากรอกลิงก์บทความ/ข่าว อย่างน้อย 1 ลิงก์</div>
+      </div>
+
+      <!-- URL รูปภาพประกอบ (หลายช่อง + ตรวจสอบ + preview) -->
+      <div class="field-group">
+        <label>รูปภาพประกอบ <span class="hint">(URL รูปภาพ .jpg .png .gif .webp — เพิ่มได้หลายรูป)</span></label>
+        <div id="storyImagesList"></div>
+        <button type="button" class="add-btn" onclick="addStoryImage()" style="margin-top:8px;">+ เพิ่มรูปภาพ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTION BAR -->
+  <div class="action-bar">
+    <button class="btn-secondary" onclick="window.location.href='dashboard.html'">← กลับ Dashboard</button>
+    <button class="btn-primary" onclick="generateOutput()">📄 สร้าง Story Card</button>
+    <button class="btn-save" onclick="saveData()">💾 บันทึกข้อมูล</button>
+    <button class="btn-secondary" onclick="loadExample()">🔍 ดูตัวอย่างข้อมูล</button>
+    <button class="btn-secondary" onclick="clearAll()">🗑️ ล้างข้อมูล</button>
+    <button class="btn-secondary" onclick="window.print()">🖨️ พิมพ์</button>
+  </div>
+
+  <!-- OUTPUT PREVIEW -->
+  <div class="output-preview" id="outputPreview">
+    <div class="op-header">
+      <div class="op-logo-area">
+        <div class="op-logo-circle">🎓</div>
+        <div>
+          <div class="op-uni">Khon Kaen University</div>
+          <div class="op-sub">SDGs Impact Story — SDG Report</div>
+        </div>
+      </div>
+      <div class="op-year">
+        <div id="op_year">2026</div>
+        <small>ปีที่รายงาน</small>
+      </div>
+    </div>
+
+    <div id="op_title" class="op-title"></div>
+    <div id="op_partners" class="op-partners"></div>
+    <div class="op-info-grid" id="op_info_grid" style="display:none;"></div>
+    <div class="op-objective" id="op_objective" style="display:none;">
+      <div class="op-objective-label">🎯 วัตถุประสงค์หลัก</div>
+      <div class="op-objective-text"></div>
+    </div>
+    <div id="op_sdg_bar" class="op-sdg-bar"></div>
+    <div class="op-sdg-explain" id="op_sdg_explain" style="display:none;">
+      <div class="op-sdg-explain-label">🌐 ความเชื่อมโยงกับ SDGs</div>
+      <div class="op-sdg-explain-text"></div>
+    </div>
+    <div class="op-timeline" id="op_timeline"></div>
+    <div class="op-metrics" id="op_metrics"></div>
+    <div id="op_achievement" style="display:none;background:#f0f7ff;border:1.5px solid #d0e8f8;border-radius:12px;padding:14px 18px;margin-bottom:20px;"></div>
+    <div class="op-spillover" id="op_spillover" style="display:none;">
+      <div class="op-spillover-label">🌱 ผลกระทบที่ต่อยอด (Spillover)</div>
+      <div class="op-spillover-text"></div>
+    </div>
+    <div id="op_quote"></div>
+    <div style="background:#f8fbff;border-radius:12px;padding:16px 18px;margin-bottom:20px;" id="op_story_block"></div>
+    <div class="op-links" id="op_links" style="display:none;"></div>
+    <div class="op-footer">
+      <span>มหาวิทยาลัยขอนแก่น — <a href="https://sdg.kku.ac.th" style="color:var(--kku-teal)">sdg.kku.ac.th</a></span>
+      <span id="op_date_footer"></span>
+    </div>
+  </div>
+
+</div>
+
+<script src="app-sdgs.js"></script>
+</body>
+</html>
