@@ -1022,6 +1022,33 @@ window.onload = function () {
     loadProjectForEdit(viewId).then(() => {
       setTimeout(() => generateOutput(), 1000);
     });
+    // ── VIEW MODE = ดูอย่างเดียว ──
+    // ซ่อนปุ่มบันทึก / สร้าง Story Card / ล้างข้อมูล / ดูตัวอย่าง
+    setTimeout(() => {
+      document.querySelectorAll('.btn-save, .btn-primary').forEach(b => b.style.display = 'none');
+      const actionBar = document.querySelector('.action-bar');
+      if (actionBar) {
+        actionBar.querySelectorAll('button').forEach(b => {
+          const t = b.textContent || '';
+          // เก็บไว้เฉพาะปุ่มกลับ Dashboard และพิมพ์
+          if (!t.includes('Dashboard') && !t.includes('พิมพ์')) b.style.display = 'none';
+        });
+      }
+      // ล็อกทุกช่องไม่ให้แก้
+      document.querySelectorAll('input, textarea, select').forEach(el => {
+        el.setAttribute('readonly', 'readonly');
+        el.setAttribute('disabled', 'disabled');
+        el.style.background = '#f4f7fb';
+      });
+      // ปิดปุ่มเพิ่ม/ลบ กิจกรรม รูป ลิงก์ และปุ่มเลือก SDG
+      document.querySelectorAll('.add-btn, .remove-btn, .story-remove-btn, .sdg-pick-btn').forEach(b => {
+        b.style.pointerEvents = 'none';
+        b.style.opacity = '0.5';
+      });
+      // แถบแจ้งว่าเป็นโหมดดูอย่างเดียว
+      const headerTitle = document.querySelector('.header-title');
+      if (headerTitle) headerTitle.innerHTML = '👁️ ดูโครงการ<br><span>' + viewId + ' (โหมดดูอย่างเดียว — แก้ไขไม่ได้)</span>';
+    }, 1200);
   } else {
     // Normal mode — add default activities
     addActivity();
