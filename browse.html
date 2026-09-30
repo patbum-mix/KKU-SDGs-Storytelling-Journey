@@ -230,7 +230,7 @@ async function loadAllProjects() {
       document.getElementById('projectList').innerHTML = '<div class="empty-state"><span class="emoji">❌</span><p>' + result.message + '</p></div>';
     }
   } catch (error) {
-    document.getElementById('projectList').innerHTML = '<div class="empty-state"><span class="emoji">❌</span><p>โหลดข้อมูลไม่สำเร็จ — ระบบอาจกำลังตื่น</p><button onclick="loadAllProjects()" style="margin-top:12px;padding:8px 18px;border:1px solid var(--kku-border);border-radius:8px;background:#fff;cursor:pointer;font-family:Sarabun,sans-serif;font-weight:600;">🔄 ลองใหม่</button></div>';
+    document.getElementById('projectList').innerHTML = '<div class="empty-state"><span class="emoji">❌</span><p>โหลดข้อมูลไม่สำเร็จ — กรุณารีเฟรชหน้าเว็บไซต์</p><button onclick="loadAllProjects()" style="margin-top:12px;padding:8px 18px;border:1px solid var(--kku-border);border-radius:8px;background:#fff;cursor:pointer;font-family:Sarabun,sans-serif;font-weight:600;">🔄 ลองใหม่</button></div>';
   }
 }
 
