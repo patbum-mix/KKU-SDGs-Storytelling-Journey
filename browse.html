@@ -190,10 +190,35 @@ function buildSdgFilterButtons() {
   }
 }
 
+// ── ยิง API แบบลองซ้ำอัตโนมัติ (กัน cold start / โหลดครั้งแรกไม่ทัน) ──
+async function fetchJSONRetry(url, options, onAttempt) {
+  const maxTries = 4;
+  let lastErr;
+  for (let attempt = 1; attempt <= maxTries; attempt++) {
+    if (onAttempt) onAttempt(attempt, maxTries);
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 30000);
+      const res = await fetch(url, Object.assign({ signal: controller.signal }, options || {}));
+      clearTimeout(timer);
+      const text = await res.text();
+      const trimmed = (text || '').trim();
+      if (trimmed.startsWith('<')) throw new Error('ระบบยังตอบไม่พร้อม (HTML)');
+      return JSON.parse(trimmed);
+    } catch (e) {
+      lastErr = e;
+      if (attempt < maxTries) await new Promise(r => setTimeout(r, 2000));
+    }
+  }
+  throw lastErr;
+}
+
 async function loadAllProjects() {
   try {
-    const res = await fetch(API_URL + '?action=getAllProjects');
-    const result = await res.json();
+    const result = await fetchJSONRetry(API_URL + '?action=getAllProjects', null, function(attempt) {
+      const msg = attempt === 1 ? '⏳ กำลังโหลดข้อมูล... กรุณารอสักครู่' : '⏳ กำลังโหลดข้อมูล... (ลองอีกครั้ง ' + attempt + ')';
+      document.getElementById('projectList').innerHTML = '<div class="loading">' + msg + '</div>';
+    });
     if (result.status === 'success') {
       allProjects = result.projects;
       buildFilterDropdowns();
@@ -203,7 +228,7 @@ async function loadAllProjects() {
       document.getElementById('projectList').innerHTML = '<div class="empty-state"><span class="emoji">❌</span><p>' + result.message + '</p></div>';
     }
   } catch (error) {
-    document.getElementById('projectList').innerHTML = '<div class="empty-state"><span class="emoji">❌</span><p>โหลดข้อมูลไม่สำเร็จ: ' + error.message + '</p></div>';
+    document.getElementById('projectList').innerHTML = '<div class="empty-state"><span class="emoji">❌</span><p>โหลดข้อมูลไม่สำเร็จ — ระบบอาจกำลังตื่น</p><button onclick="loadAllProjects()" style="margin-top:12px;padding:8px 18px;border:1px solid var(--kku-border);border-radius:8px;background:#fff;cursor:pointer;font-family:Sarabun,sans-serif;font-weight:600;">🔄 ลองใหม่</button></div>';
   }
 }
 

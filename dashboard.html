@@ -21,7 +21,7 @@
     .dash-main{max-width:960px;margin:0 auto;padding:24px 20px 60px;}
     .dash-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
     .dash-stat{background:white;border-radius:14px;padding:18px;text-align:center;border:1px solid var(--kku-border);box-shadow:var(--shadow-sm);}
-    .dash-stat .val{font-family:'Prompt',sans-serif;font-size:26px;font-weight:800;color:var(--kku-navy);line-height:1.2;word-break:break-word;overflow-wrap:break-word;}
+    .dash-stat .val{font-family:'Prompt',sans-serif;font-size:28px;font-weight:800;color:var(--kku-navy);}
     .dash-stat .lbl{font-size:11px;color:var(--kku-gray);margin-top:4px;}
     .dash-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
     .dash-toolbar h2{font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;color:var(--kku-navy);}
@@ -67,15 +67,14 @@
     .filter-count strong{color:var(--kku-navy);}
 
     /* ── ADMIN PANELS ── */
-    .admin-panels{display:grid;grid-template-columns:5fr 7fr;gap:14px;margin-bottom:20px;}
-    .admin-panel{background:white;border-radius:14px;padding:18px;border:1px solid var(--kku-border);box-shadow:var(--shadow-sm);min-width:0;}
+    .admin-panels{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+    .admin-panel{background:white;border-radius:14px;padding:18px;border:1px solid var(--kku-border);box-shadow:var(--shadow-sm);}
     .admin-panel h3{font-family:'Prompt',sans-serif;font-size:14px;font-weight:700;color:var(--kku-navy);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
-    #sdgOverview{overflow-x:hidden;}
     .sdg-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px;}
-    .sdg-bar-label{width:26px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:white;flex-shrink:0;}
-    .sdg-bar-track{flex:1;min-width:0;height:16px;background:#f0f3f8;border-radius:8px;overflow:hidden;}
+    .sdg-bar-label{width:28px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:white;flex-shrink:0;}
+    .sdg-bar-track{flex:1;height:16px;background:#f0f3f8;border-radius:8px;overflow:hidden;}
     .sdg-bar-fill{height:100%;border-radius:8px;transition:width 0.5s;}
-    .sdg-bar-count{font-weight:700;color:var(--kku-navy);width:24px;text-align:right;flex-shrink:0;}
+    .sdg-bar-count{font-weight:700;color:var(--kku-navy);width:28px;text-align:right;flex-shrink:0;}
     .faculty-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0f3f8;font-size:12px;}
     .faculty-row:last-child{border:none;}
     .faculty-name{color:#333;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -136,10 +135,10 @@
   <div class="admin-panels" id="adminPanels" style="display:none;">
     <div class="admin-panel">
       <h3>📊 ภาพรวม SDGs</h3>
-      <div id="sdgOverview" style="max-height:320px;overflow-y:auto;"></div>
+      <div id="sdgOverview"></div>
     </div>
     <div class="admin-panel">
-      <h3 id="facultyOverviewTitle">🏫 จำนวนโครงการต่อคณะ/หน่วยงาน</h3>
+      <h3>🏫 จำนวนโครงการต่อคณะ/หน่วยงาน</h3>
       <div id="facultyOverview" style="max-height:320px;overflow-y:auto;"></div>
     </div>
   </div>
@@ -213,7 +212,7 @@ let filterSdgs = [];
 
 const user = JSON.parse(sessionStorage.getItem('sdg_user') || 'null');
 if (!user) {
-  window.location.href = 'login2.html';
+  window.location.href = 'index.html';
 } else {
   document.getElementById('userFaculty').textContent = user.faculty_name;
   document.getElementById('userRole').textContent = user.role === 'admin' ? '👑 ผู้ดูแลระบบ (เห็นทุกคณะ)' : '👤 ' + user.username;
@@ -247,12 +246,37 @@ function buildSdgFilterButtons() {
   }
 }
 
+// ── ยิง API แบบลองซ้ำอัตโนมัติ (กัน cold start / โหลดครั้งแรกไม่ทัน) ──
+async function fetchJSONRetry(url, options, onAttempt) {
+  const maxTries = 4;
+  let lastErr;
+  for (let attempt = 1; attempt <= maxTries; attempt++) {
+    if (onAttempt) onAttempt(attempt, maxTries);
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 30000);
+      const res = await fetch(url, Object.assign({ signal: controller.signal }, options || {}));
+      clearTimeout(timer);
+      const text = await res.text();
+      const trimmed = (text || '').trim();
+      if (trimmed.startsWith('<')) throw new Error('ระบบยังตอบไม่พร้อม (HTML)');
+      return JSON.parse(trimmed);
+    } catch (e) {
+      lastErr = e;
+      if (attempt < maxTries) await new Promise(r => setTimeout(r, 2000));
+    }
+  }
+  throw lastErr;
+}
+
 // ── Load Projects ──
 async function loadProjects() {
   try {
     const url = API_URL + '?action=getProjects&username=' + encodeURIComponent(user.username);
-    const res = await fetch(url);
-    const result = await res.json();
+    const result = await fetchJSONRetry(url, null, function(attempt) {
+      const msg = attempt === 1 ? '⏳ กำลังโหลดข้อมูล... กรุณารอสักครู่' : '⏳ กำลังโหลดข้อมูล... (ลองอีกครั้ง ' + attempt + ')';
+      document.getElementById('projectList').innerHTML = '<div class="loading">' + msg + '</div>';
+    });
     if (result.status === 'success') {
       allProjects = result.projects;
       buildFilterDropdowns();
@@ -266,7 +290,7 @@ async function loadProjects() {
       document.getElementById('projectList').innerHTML = '<div class="empty-state"><span class="emoji">❌</span><p>' + result.message + '</p></div>';
     }
   } catch (error) {
-    document.getElementById('projectList').innerHTML = '<div class="empty-state"><span class="emoji">❌</span><p>โหลดข้อมูลไม่สำเร็จ: ' + error.message + '</p></div>';
+    document.getElementById('projectList').innerHTML = '<div class="empty-state"><span class="emoji">❌</span><p>โหลดข้อมูลไม่สำเร็จ — ระบบอาจกำลังตื่น</p><button onclick="loadProjects()" style="margin-top:12px;padding:8px 18px;border:1px solid var(--kku-border);border-radius:8px;background:#fff;cursor:pointer;font-family:Sarabun,sans-serif;font-weight:600;">🔄 ลองใหม่</button></div>';
   }
 }
 
@@ -349,23 +373,7 @@ function updateStats(projects) {
     if (p.sdgs) p.sdgs.toString().split(',').forEach(s => { if (s.trim()) allSdgSet.add(s.trim()); });
   });
   document.getElementById('statSDGs').textContent = allSdgSet.size;
-  // แสดงวันที่อัปเดตล่าสุด — ตัดเอาเฉพาะวันที่ (กันกรณี timestamp เป็นสตริงยาว GMT)
-  let latest = '-';
-  if (projects.length > 0) {
-    let raw = (projects[projects.length - 1].timestamp || '').toString().trim();
-    // ถ้ามีรูปแบบ dd/MM/yyyy อยู่ ให้เอาส่วนนั้น
-    const m = raw.match(/\d{1,2}\/\d{1,2}\/\d{2,4}/);
-    if (m) {
-      latest = m[0];
-    } else if (raw.length > 20) {
-      // ถ้าเป็น Date string ยาว → แปลงเป็นวันที่ไทยสั้นๆ
-      const d = new Date(raw);
-      latest = isNaN(d) ? raw.substring(0, 10) : d.toLocaleDateString('th-TH');
-    } else {
-      latest = raw;
-    }
-  }
-  document.getElementById('statLatest').textContent = latest;
+  document.getElementById('statLatest').textContent = projects.length > 0 ? projects[projects.length - 1].timestamp : '-';
 }
 
 // ── SDG Overview (admin) ──
@@ -466,7 +474,7 @@ async function toggleLogPanel() {
     } else { document.getElementById('logContent').innerHTML = '<div style="text-align:center;padding:20px;color:var(--kku-gray);">ยังไม่มีประวัติ</div>'; }
   } catch (error) { document.getElementById('logContent').innerHTML = '<div style="color:#e74c3c;padding:10px;">โหลดไม่สำเร็จ: ' + error.message + '</div>'; }
 }
-function logout() { sessionStorage.removeItem('sdg_user'); sessionStorage.removeItem('sdg_browse_user'); window.location.href = 'index.html'; }
+function logout() { sessionStorage.removeItem('sdg_user'); window.location.href = 'index.html'; }
 </script>
 </body>
 </html>
