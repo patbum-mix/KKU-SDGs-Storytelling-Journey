@@ -88,13 +88,13 @@ const sdgNames = {1:'ขจัดความยากจน',2:'ขจัดค
 
 // ── ยิง API แบบลองซ้ำอัตโนมัติ (กัน cold start / โหลดครั้งแรกไม่ทัน) ──
 async function fetchJSONRetry(url, options, onAttempt) {
-  const maxTries = 4;
+  const maxTries = 2;
   let lastErr;
   for (let attempt = 1; attempt <= maxTries; attempt++) {
     if (onAttempt) onAttempt(attempt, maxTries);
     try {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 30000);
+      const timer = setTimeout(() => controller.abort(), 90000);
       // กันแคช: เติมตัวเลขเวลาท้าย URL + no-store เพื่อไม่ให้เบราว์เซอร์ส่งคำตอบเก่า
       const bustedUrl = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_ts=' + Date.now();
       const res = await fetch(bustedUrl, Object.assign({ signal: controller.signal, cache: 'no-store' }, options || {}));
@@ -105,7 +105,7 @@ async function fetchJSONRetry(url, options, onAttempt) {
       return JSON.parse(trimmed);
     } catch (e) {
       lastErr = e;
-      if (attempt < maxTries) await new Promise(r => setTimeout(r, 2000));
+      if (attempt < maxTries) await new Promise(r => setTimeout(r, 4000));
     }
   }
   throw lastErr;
@@ -114,7 +114,7 @@ async function fetchJSONRetry(url, options, onAttempt) {
 async function loadStats() {
   try {
     const d = await fetchJSONRetry(API_URL + '?action=getStats', null, function(attempt) {
-      const msg = attempt === 1 ? '⏳ กำลังโหลดข้อมูล... กรุณารอสักครู่' : '⏳ กำลังโหลดข้อมูล... (ลองอีกครั้ง ' + attempt + ')';
+      const msg = attempt === 1 ? '⏳ กำลังโหลดข้อมูล... อาจใช้เวลาสักครู่ (สูงสุด ~1 นาที) กรุณาอย่าเพิ่งปิดหน้านี้' : '⏳ กำลังโหลดข้อมูล... (ลองอีกครั้ง ' + attempt + ')';
       document.getElementById('ovContent').innerHTML = '<div class="ov-loading">' + msg + '</div>';
     });
     if (d.status !== 'success') {
