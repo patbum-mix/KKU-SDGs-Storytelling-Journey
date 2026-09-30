@@ -95,7 +95,9 @@ async function fetchJSONRetry(url, options, onAttempt) {
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 30000);
-      const res = await fetch(url, Object.assign({ signal: controller.signal }, options || {}));
+      // กันแคช: เติมตัวเลขเวลาท้าย URL + no-store เพื่อไม่ให้เบราว์เซอร์ส่งคำตอบเก่า
+      const bustedUrl = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_ts=' + Date.now();
+      const res = await fetch(bustedUrl, Object.assign({ signal: controller.signal, cache: 'no-store' }, options || {}));
       clearTimeout(timer);
       const text = await res.text();
       const trimmed = (text || '').trim();
